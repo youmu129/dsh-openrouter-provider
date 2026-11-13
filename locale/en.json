@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenRouter provider",
+    "description": "Seeds the OpenRouter route (https://openrouter.ai/api/v1) into the Models page with exactly one model, deepseek/deepseek-v4.1-flash-1017: 1M context, text and image input, reasoning efforts off/low/high/max (default high). The seed is authoritative: it is re-applied on every start, so manual edits to this route in Models are overwritten; uninstall the plugin to customize or remove the route. The API key resolves per request from the OPENROUTER_API_KEY credential (Settings > Credentials or the environment); no key is stored in the plugin."
+  }
+}

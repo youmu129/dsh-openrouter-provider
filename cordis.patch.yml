@@ -1,0 +1,18 @@
+# Bundle layer of dsh-openrouter-provider (v0.1.0).
+#
+# 本插件不拥有 `llm-pi-ai` 行：patch 按 id 定位行、整行替换 `config`，
+# 多个 bundle 的 providers 无法在 patch 层合并。改为插入本插件自身的
+# 挂载行，宿主半面（src/index.ts）负责播种：启动 settle 后经 settings
+# 服务读生效配置，比对 openrouter 路由与种子，缺失或不一致即按 provider
+# 键覆写用户层（profile cordis.patch.yml）——与 Web Models 页「自定义
+# 模型 API」同一条写入路径，只覆写 openrouter 这一个路由。
+#
+# 种子权威：openrouter 路由仅提供 deepseek/deepseek-v4.1-flash-1017
+# 一个模型；模型跟进改种子 + 重启即自动同步。
+#
+# 凭证不落此文件：路由经 apiKeyEnv 引用 OPENROUTER_API_KEY，由 harness
+# 凭证机制按请求解析。
+- insert:
+    - id: dsh-openrouter-provider
+      name: 'dsh-openrouter-provider'
+      config: {}

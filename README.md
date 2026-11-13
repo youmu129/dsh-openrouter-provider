@@ -17,7 +17,7 @@ DSH 插件：向 `llm-pi-ai` 用户层播种 OpenRouter 供应商路由（`https
 ```sh
 pnpm install
 pnpm build   # tsdown：src/index.ts → lib/index.js（host 半面，ESM）
-pnpm test    # Node 原生测试（tsx 加载 TS），单进程聚合入口 test/run-all.ts
+pnpm test    # Node ≥24 原生 type-strip 跑 node:test，单进程聚合入口 test/run-all.ts
 ```
 
 ## 安装
@@ -26,7 +26,7 @@ pnpm test    # Node 原生测试（tsx 加载 TS），单进程聚合入口 test
 
 ## 状态
 
-初版开发中。
+初版完成：build + 9 单测全绿；种子经本机安装版 dsh-llm-pi-ai（0.2.2-rc.1）严格解析校验——路由可服务、恰好物化一个模型、推理等级映射与 OpenRouter 线上兼容约定（thinkingFormat=openrouter 等自动检测 + 两项显式 compat）正确。尚未安装进 profile；安装与 GUI 目检待做。
 
 ## 约定
 

@@ -1,0 +1,38 @@
+{
+  "name": "dsh-openrouter-provider",
+  "version": "0.1.0",
+  "description": "DSH 插件：播种 OpenRouter 供应商，仅提供 deepseek/deepseek-v4.1-flash-1017 这一个模型。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "cordis.patch.yml",
+    "lib",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "keywords": [
+    "dsh-plugin"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "node test/run-all.ts"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "devDependencies": {
+    "tsdown": "^0.23.0",
+    "typescript": "^7.0.2"
+  }
+}
