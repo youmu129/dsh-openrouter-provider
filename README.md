@@ -26,7 +26,7 @@ pnpm test    # Node ≥24 原生 type-strip 跑 node:test，单进程聚合入�
 
 ## 状态
 
-初版完成：build + 9 单测全绿；种子经本机安装版 dsh-llm-pi-ai（0.2.2-rc.1）严格解析校验——路由可服务、恰好物化一个模型、推理等级映射与 OpenRouter 线上兼容约定（thinkingFormat=openrouter 等自动检测 + 两项显式 compat）正确。尚未安装进 profile；安装与 GUI 目检待做。
+初版完成：build + 9 单测全绿；种子经本机安装版 dsh-llm-pi-ai（0.2.2-rc.1）严格解析校验——路由可服务、恰好物化一个模型、推理等级映射与 OpenRouter 线上兼容约定（thinkingFormat=openrouter 等自动检测 + 两项显式 compat）正确。已 link 安装进 web profile（plugin_manager applied，合成树含挂载行，产物可导入）；播种在下次后端重启时写入用户层，GUI 目检与 OPENROUTER_API_KEY 凭证录入待做。
 
 ## 约定
 
