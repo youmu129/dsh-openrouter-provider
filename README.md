@@ -22,7 +22,11 @@ pnpm test    # Node ≥24 原生 type-strip 跑 node:test，单进程聚合入�
 
 ## 安装
 
-先 `pnpm install && pnpm build`（link 安装不构建被链目录），再经 DSH **Plugins > Add plugin** 选择本目录，或 `dsh plugin --profile <name> add <本目录绝对路径>`。安装后重启 profile，Models 页应出现 OpenRouter 供应商且仅含一个模型。
+```powershell
+dsh plugin --profile web add https://github.com/youmu129/dsh-openrouter-provider
+```
+
+或本地开发安装：先 `pnpm install && pnpm build`（link 安装不构建被链目录），再经 DSH **Plugins > Add plugin** 选择本目录，或 `dsh plugin --profile <name> add <本目录绝对路径>`。安装后重启 profile，Models 页应出现 OpenRouter 供应商且仅含一个模型。
 
 ## 状态
 
