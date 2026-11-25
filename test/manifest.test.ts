@@ -35,8 +35,10 @@ test('both locales ship non-empty meta title and description', () => {
     }
     assert.ok(dict.meta.title.length > 0, `${lang} meta.title 为空`)
     assert.ok(dict.meta.description.length > 0, `${lang} meta.description 为空`)
-    assert.ok(dict.meta.description.includes('deepseek/deepseek-v4.1-flash-1017'),
-      `${lang} meta.description 应点明唯一模型`)
+    // 描述应点明所含模型（首尾各抽一个，防止模型清单与 locale 脱节）
+    for (const id of ['deepseek/deepseek-v4.1-flash-1017', 'anthropic/claude-opus-5.5']) {
+      assert.ok(dict.meta.description.includes(id), `${lang} meta.description 应点明模型 ${id}`)
+    }
   }
 })
 

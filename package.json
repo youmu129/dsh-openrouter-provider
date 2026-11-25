@@ -1,7 +1,7 @@
 {
   "name": "dsh-openrouter-provider",
   "version": "0.1.0",
-  "description": "DSH 插件：播种 OpenRouter 供应商，仅提供 deepseek/deepseek-v4.1-flash-1017 这一个模型。",
+  "description": "DSH 插件：播种 OpenRouter 供应商，提供 deepseek/deepseek-v4.1-flash-1017、openai/gpt-6.2-sol、openai/gpt-6.2-astra、google/gemini-4-carbon、google/gemini-4-hydrogen、google/gemini-4-neon、anthropic/claude-fable-5.2、anthropic/claude-sonnet-5.5、anthropic/claude-opus-5.5 九个模型。",
   "type": "module",
   "main": "lib/index.js",
   "exports": {

@@ -1,11 +1,25 @@
 # dsh-openrouter-provider
 
-DSH 插件：向 `llm-pi-ai` 用户层播种 OpenRouter 供应商路由（`https://openrouter.ai/api/v1`），**仅提供 `deepseek/deepseek-v4.1-flash-1017` 这一个模型**。与 dsh-zhipu / dsh-kimi / dsh-aliyun-bailian-provider 同款「种子权威」播种机制，不含用量 pill。
+DSH 插件：向 `llm-pi-ai` 用户层播种 OpenRouter 供应商路由（`https://openrouter.ai/api/v1`），**提供下表九个精选模型**。与 dsh-zhipu / dsh-kimi / dsh-aliyun-bailian-provider 同款「种子权威」播种机制，不含用量 pill。
 
 ## 功能范围
 
 - **播种**：每次启动 loader settle 后，把生效配置中的 `openrouter` 路由与种子深度比对（`node:util` isDeepStrictEqual），缺失或不一致即经 settings 服务按 provider 键覆写用户层（profile `cordis.patch.yml`）——与 Web Models 页「自定义模型 API」同一条写入路径，只影响 `openrouter` 这一个路由；
-- **单模型种子**：`deepseek/deepseek-v4.1-flash-1017`（DeepSeek V4.1 Flash 的 2026-10-17 快照），1M 上下文（1,048,576）、384K 最大输出、text+image 输入、推理等级 off/low/high/max（线上 `none/low/high/max`，默认 high）；
+- **模型种子**（路由走 `openai-completions`，全部模型 text+image 输入；规格据 OpenRouter 目录数据源 [models.dev](https://models.dev)，2026-11-25 核实）：
+
+  | 模型 id | 显示名 | 上下文 | 最大输出 | 推理档位 |
+  | --- | --- | --- | --- | --- |
+  | `deepseek/deepseek-v4.1-flash-1017` | DeepSeek-V4.1-Flash-1017 | 1,048,576 | 384,000 | off / low / high / max |
+  | `openai/gpt-6.2-sol` | GPT-6.2 Sol | 1,050,000 | 128,000 | off / low / medium / high / xhigh / max |
+  | `google/gemini-4-carbon` | Gemini 4 Carbon | 1,048,576 | 65,536 | off / low / medium / high |
+  | `google/gemini-4-hydrogen` | Gemini 4 Hydrogen | 1,048,576 | 65,536 | off / low / medium / high / xhigh |
+  | `google/gemini-4-neon` | Gemini 4 Neon | 1,048,576 | 65,536 | off / low / medium / high / xhigh |
+  | `openai/gpt-6.2-astra` | GPT-6.2 Astra | 1,050,000 | 128,000 | off / low / medium / high / xhigh / max |
+  | `anthropic/claude-fable-5.2` | Claude Fable 5.2 | 1,000,000 | 128,000 | off / low / medium / high / xhigh / max |
+  | `anthropic/claude-sonnet-5.5` | Claude Sonnet 5.5 | 1,000,000 | 128,000 | off / low / medium / high / xhigh / max |
+  | `anthropic/claude-opus-5.5` | Claude Opus 5.5 | 1,000,000 | 128,000 | off / low / medium / high / xhigh / max |
+
+  路由默认推理等级 `high`（全部模型支持）。档位映射与 compat 开关对齐安装版 pi-ai 目录的 openrouter 同族条目：档位按线上拼写恒等映射，`off` 发送 OpenRouter `reasoning.effort: none`；Claude 三项在 pi-ai 目录中走 anthropic-messages 协议，本路由统一走 OpenAI 兼容端点（llm-pi-ai 的路由级 `api` 对整条路由生效，且 GPT-6.2 / Gemini 4 新型号尚未进入安装版目录），其请求兼容交 pi-ai 的 openrouter 自动检测；
 - **凭证**：路由经 `apiKeyEnv` 引用 `OPENROUTER_API_KEY`，由 DSH 凭证机制按请求解析。凭证只存放于 DSH 凭证机制，不入库、不写入日志与文档。
 
 ## 种子权威的含义
@@ -26,11 +40,12 @@ pnpm test    # Node ≥24 原生 type-strip 跑 node:test，单进程聚合入�
 dsh plugin --profile web add https://github.com/youmu129/dsh-openrouter-provider
 ```
 
-或本地开发安装：先 `pnpm install && pnpm build`（link 安装不构建被链目录），再经 DSH **Plugins > Add plugin** 选择本目录，或 `dsh plugin --profile <name> add <本目录绝对路径>`。安装后重启 profile，Models 页应出现 OpenRouter 供应商且仅含一个模型。
+或本地开发安装：先 `pnpm install && pnpm build`（link 安装不构建被链目录），再经 DSH **Plugins > Add plugin** 选择本目录，或 `dsh plugin --profile <name> add <本目录绝对路径>`。安装后重启 profile，Models 页应出现 OpenRouter 供应商且含上表九个模型；已装旧版的 profile 在下次重启时由种子权威自动把路由覆写为九模型，无需手工同步用户层。
 
 ## 状态
 
-初版完成：build + 9 单测全绿；种子经本机安装版 dsh-llm-pi-ai（0.2.2-rc.1）严格解析校验——路由可服务、恰好物化一个模型、推理等级映射与 OpenRouter 线上兼容约定（thinkingFormat=openrouter 等自动检测 + 两项显式 compat）正确。已 link 安装进 web profile（plugin_manager applied，合成树含挂载行，产物可导入）；播种在下次后端重启时写入用户层，GUI 目检与 OPENROUTER_API_KEY 凭证录入待做。
+- 初版：单模型种子（DeepSeek-V4.1-Flash-1017），build + 单测全绿；种子经本机安装版 dsh-llm-pi-ai（0.2.2-rc.1）严格解析校验；已 link 安装进 web profile。
+- 2026-11-25：种子新增八个模型（GPT-6.2 Sol / Astra、Gemini 4 Carbon / Hydrogen / Neon、Claude Fable 5.2 / Sonnet 5.5 / Opus 5.5），规格据 models.dev；build + 单测全绿，九模型种子经本机安装版 dsh-llm-pi-ai（0.2.2-rc.1）严格解析校验；GUI 目检与 OPENROUTER_API_KEY 凭证录入待做。
 
 ## 约定
 
