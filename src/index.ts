@@ -72,6 +72,16 @@ interface SeedProfile {
 /**
  * The openrouter route: the nine curated models below, in picker order.
  *
+ * 排序（2026-11-25）：先按训练方分组，组内按厂商官方能力定位由高到低
+ * （旗舰 → 均衡 → 轻量）。训练方顺序取模型 id 前缀的字典序（anthropic /
+ * deepseek / google / openai），与 pi-ai 目录的 id 排序一致。能力定位依据
+ * 厂商官方模型文档：
+ * - Anthropic：Fable 5.2（苛刻推理与长程 agentic 工作）> Opus 5.5（多数
+ *   工作负载的起点）> Sonnet 5.5；
+ * - Google：Carbon（旗舰，最难的长程项目）> Neon（介于最高智能与最高效率
+ *   之间的中杯）> Hydrogen（日常高频，追求响应速度）；
+ * - OpenAI：Astra（旗舰，复杂推理与编程）> Sol（兼顾能力与成本的日常首选）。
+ *
  * 规格来源（2026-11-25 核实）：OpenRouter 模型目录的数据源 models.dev
  * （openrouter 供应商条目）给出上下文 / 最大输出 / 输入模态 / 推理档位；
  * 输入模态按 llm-pi-ai profile 词汇（仅 text / image）声明为 text+image，
@@ -88,6 +98,41 @@ const PROFILE: SeedProfile = {
   // 路由级默认推理等级：全部种子模型均支持 high
   reasoning: 'high',
   models: [
+    {
+      // Anthropic Claude Fable 5.2（2026-11-09 上线）：Anthropic 顶配，面向
+      // 苛刻推理与长程 agentic 工作；档位 low/medium/high/xhigh/max，与安装版
+      // pi-ai 目录同 id 条目的 thinkingLevelMap 一致。该目录条目走
+      // anthropic-messages 协议，本路由统一走 openai-completions：其 compat
+      // （forceAdaptiveThinking 等）属 anthropic-messages 专用字段，pi-ai 按
+      // 协议逐字段读取 compat，在本协议下不参与请求；本条不声明 compat，
+      // 全部交 openrouter 自动检测。
+      id: 'anthropic/claude-fable-5.2',
+      name: 'Claude Fable 5.2',
+      contextWindow: 1000000,
+      maxTokens: 128000,
+      input: ['text', 'image'],
+      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh', max: 'max' },
+    },
+    {
+      // Anthropic Claude Opus 5.5（2026-09-22 上线）：Anthropic 次旗舰，官方
+      // 推荐作为多数工作负载的起点；档位同 Claude Fable 5.2。
+      id: 'anthropic/claude-opus-5.5',
+      name: 'Claude Opus 5.5',
+      contextWindow: 1000000,
+      maxTokens: 128000,
+      input: ['text', 'image'],
+      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh', max: 'max' },
+    },
+    {
+      // Anthropic Claude Sonnet 5.5（2026-09-28 上线）：Anthropic 均衡档；
+      // 档位同 Claude Fable 5.2。
+      id: 'anthropic/claude-sonnet-5.5',
+      name: 'Claude Sonnet 5.5',
+      contextWindow: 1000000,
+      maxTokens: 128000,
+      input: ['text', 'image'],
+      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh', max: 'max' },
+    },
     {
       // DeepSeek V4.1 Flash 的 2026-10-17 快照。规格依据（2026-11-14 核实）：
       // - 上下文 1,048,576：OpenRouter 模型对比页；
@@ -111,20 +156,9 @@ const PROFILE: SeedProfile = {
       },
     },
     {
-      // OpenAI GPT-6.2 Sol（2026-11-17 上线）：档位 low/medium/high/xhigh/max；
-      // 目录未列关闭思考档位，off 沿用同族目录条目（openai/gpt-6.1-sol、
-      // openai/gpt-6-astra）的无值声明；strict 工具模式同该族条目。
-      id: 'openai/gpt-6.2-sol',
-      name: 'GPT-6.2 Sol',
-      contextWindow: 1050000,
-      maxTokens: 128000,
-      input: ['text', 'image'],
-      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh', max: 'max' },
-      compat: { supportsStrictMode: true },
-    },
-    {
-      // Google Gemini 4 Carbon（2026-11-10 上线）：档位 low/medium/high；
-      // strict 工具模式沿用 pi-ai 目录同族条目（google/gemini-4-argon）的声明。
+      // Google Gemini 4 Carbon（2026-11-10 上线）：Gemini 4 旗舰，负责最难
+      // 的长程项目；档位 low/medium/high；strict 工具模式沿用 pi-ai 目录同族
+      // 条目（google/gemini-4-argon）的声明。
       id: 'google/gemini-4-carbon',
       name: 'Gemini 4 Carbon',
       contextWindow: 1048576,
@@ -134,17 +168,8 @@ const PROFILE: SeedProfile = {
       compat: { supportsStrictMode: true },
     },
     {
-      // Google Gemini 4 Hydrogen（2026-11-12 上线）：档位 low/medium/high/xhigh。
-      id: 'google/gemini-4-hydrogen',
-      name: 'Gemini 4 Hydrogen',
-      contextWindow: 1048576,
-      maxTokens: 65536,
-      input: ['text', 'image'],
-      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh' },
-      compat: { supportsStrictMode: true },
-    },
-    {
-      // Google Gemini 4 Neon（2026-11-18 上线）：档位 low/medium/high/xhigh。
+      // Google Gemini 4 Neon（2026-11-18 上线）：介于最高智能（Carbon）与最高
+      // 效率（Hydrogen）之间的中杯；档位 low/medium/high/xhigh。
       id: 'google/gemini-4-neon',
       name: 'Gemini 4 Neon',
       contextWindow: 1048576,
@@ -154,7 +179,21 @@ const PROFILE: SeedProfile = {
       compat: { supportsStrictMode: true },
     },
     {
-      // OpenAI GPT-6.2 Astra（2026-11-17 上线）：档位同 GPT-6.2 Sol。
+      // Google Gemini 4 Hydrogen（2026-11-12 上线）：面向日常高频场景、追求
+      // 响应速度；档位 low/medium/high/xhigh。
+      id: 'google/gemini-4-hydrogen',
+      name: 'Gemini 4 Hydrogen',
+      contextWindow: 1048576,
+      maxTokens: 65536,
+      input: ['text', 'image'],
+      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh' },
+      compat: { supportsStrictMode: true },
+    },
+    {
+      // OpenAI GPT-6.2 Astra（2026-11-17 上线）：OpenAI 旗舰，面向复杂推理与
+      // 编程；档位 low/medium/high/xhigh/max，目录未列关闭思考档位，off 沿用
+      // 同族目录条目（openai/gpt-6.1-sol、openai/gpt-6-astra）的无值声明；
+      // strict 工具模式同该族条目。
       id: 'openai/gpt-6.2-astra',
       name: 'GPT-6.2 Astra',
       contextWindow: 1050000,
@@ -164,36 +203,15 @@ const PROFILE: SeedProfile = {
       compat: { supportsStrictMode: true },
     },
     {
-      // Anthropic Claude Fable 5.2（2026-11-09 上线）：档位 low/medium/high/xhigh/max，
-      // 与安装版 pi-ai 目录同 id 条目的 thinkingLevelMap 一致。该目录条目走
-      // anthropic-messages 协议，本路由统一走 openai-completions：其 compat
-      // （forceAdaptiveThinking 等）属 anthropic-messages 专用字段，pi-ai 按
-      // 协议逐字段读取 compat，在本协议下不参与请求；本条不声明 compat，
-      // 全部交 openrouter 自动检测。
-      id: 'anthropic/claude-fable-5.2',
-      name: 'Claude Fable 5.2',
-      contextWindow: 1000000,
+      // OpenAI GPT-6.2 Sol（2026-11-17 上线）：OpenAI 均衡档，官方定位为兼顾
+      // 能力与成本的日常首选；档位同 GPT-6.2 Astra。
+      id: 'openai/gpt-6.2-sol',
+      name: 'GPT-6.2 Sol',
+      contextWindow: 1050000,
       maxTokens: 128000,
       input: ['text', 'image'],
       reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh', max: 'max' },
-    },
-    {
-      // Anthropic Claude Sonnet 5.5（2026-09-28 上线）：档位同 Claude Fable 5.2。
-      id: 'anthropic/claude-sonnet-5.5',
-      name: 'Claude Sonnet 5.5',
-      contextWindow: 1000000,
-      maxTokens: 128000,
-      input: ['text', 'image'],
-      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh', max: 'max' },
-    },
-    {
-      // Anthropic Claude Opus 5.5（2026-09-22 上线）：档位同 Claude Fable 5.2。
-      id: 'anthropic/claude-opus-5.5',
-      name: 'Claude Opus 5.5',
-      contextWindow: 1000000,
-      maxTokens: 128000,
-      input: ['text', 'image'],
-      reasoningEfforts: { off: null, low: 'low', medium: 'medium', high: 'high', xhigh: 'xhigh', max: 'max' },
+      compat: { supportsStrictMode: true },
     },
   ],
 }

@@ -7,9 +7,9 @@
 # 键覆写用户层（profile cordis.patch.yml）——与 Web Models 页「自定义
 # 模型 API」同一条写入路径，只覆写 openrouter 这一个路由。
 #
-# 种子权威：openrouter 路由提供种子列出的九个精选模型（DeepSeek V4.1 Flash、
-# GPT-6.2 Sol / Astra、Gemini 4 Carbon / Hydrogen / Neon、Claude Fable 5.2 /
-# Sonnet 5.5 / Opus 5.5）；模型跟进改种子 + 重启即自动同步。
+# 种子权威：openrouter 路由提供种子列出的九个精选模型，按训练方分组、组内
+# 按能力定位排序（Claude Fable / Opus / Sonnet、DeepSeek V4.1 Flash、Gemini 4
+# Carbon / Neon / Hydrogen、GPT-6.2 Astra / Sol）；模型跟进改种子 + 重启即自动同步。
 #
 # 凭证不落此文件：路由经 apiKeyEnv 引用 OPENROUTER_API_KEY，由 harness
 # 凭证机制按请求解析。

@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "OpenRouter 供应商",
-    "description": "向 Models 页播种 OpenRouter 路由（https://openrouter.ai/api/v1），提供九个精选模型：deepseek/deepseek-v4.1-flash-1017、openai/gpt-6.2-sol、openai/gpt-6.2-astra、google/gemini-4-carbon、google/gemini-4-hydrogen、google/gemini-4-neon、anthropic/claude-fable-5.2、anthropic/claude-sonnet-5.5、anthropic/claude-opus-5.5（均为 text+image 输入，推理档位按各模型线上支持声明，默认 high）。种子权威：每次启动自动重新同步，Models 页对该路由的手工编辑会被覆写；要自定义或移除请卸载本插件。API Key 经 OPENROUTER_API_KEY 凭证按请求解析（设置 > 凭证或环境变量），插件不存储密钥。"
+    "description": "向 Models 页播种 OpenRouter 路由（https://openrouter.ai/api/v1），提供九个精选模型，按训练方分组、组内按能力定位排序：anthropic/claude-fable-5.2、anthropic/claude-opus-5.5、anthropic/claude-sonnet-5.5、deepseek/deepseek-v4.1-flash-1017、google/gemini-4-carbon、google/gemini-4-neon、google/gemini-4-hydrogen、openai/gpt-6.2-astra、openai/gpt-6.2-sol（均为 text+image 输入，推理档位按各模型线上支持声明，默认 high）。种子权威：每次启动自动重新同步，Models 页对该路由的手工编辑会被覆写；要自定义或移除请卸载本插件。API Key 经 OPENROUTER_API_KEY 凭证按请求解析（设置 > 凭证或环境变量），插件不存储密钥。"
   }
 }

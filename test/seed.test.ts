@@ -42,18 +42,23 @@ test('seed offers exactly the nine curated models with the documented specs', ()
   // 路由级默认推理等级：全部种子模型均支持 high
   assert.equal(profile.reasoning, 'high')
 
-  // 恰为这九个模型，顺序即选择器顺序
+  // 恰为这九个模型；顺序即选择器顺序：按训练方分组（id 前缀字典序），组内按
+  // 厂商官方能力定位由高到低（旗舰 → 均衡 → 轻量）
   assert.deepEqual(profile.models.map((m) => m.id), [
-    'deepseek/deepseek-v4.1-flash-1017',
-    'openai/gpt-6.2-sol',
-    'google/gemini-4-carbon',
-    'google/gemini-4-hydrogen',
-    'google/gemini-4-neon',
-    'openai/gpt-6.2-astra',
     'anthropic/claude-fable-5.2',
-    'anthropic/claude-sonnet-5.5',
     'anthropic/claude-opus-5.5',
+    'anthropic/claude-sonnet-5.5',
+    'deepseek/deepseek-v4.1-flash-1017',
+    'google/gemini-4-carbon',
+    'google/gemini-4-neon',
+    'google/gemini-4-hydrogen',
+    'openai/gpt-6.2-astra',
+    'openai/gpt-6.2-sol',
   ])
+  // 训练方前缀须成组出现且组间按字典序（防止后续插模型打乱分组）
+  const vendors = profile.models.map((m) => m.id.split('/')[0])
+  const groups = vendors.filter((v, i) => vendors[i - 1] !== v)
+  assert.deepEqual(groups, [...new Set(vendors)].sort(), '训练方分组应连续且按字典序')
   const byId = new Map(profile.models.map((m) => [m.id, m]))
 
   // DeepSeek-V4.1-Flash-1017（2026-11-14 核实）：1M 上下文（OpenRouter 模型页）；
@@ -122,14 +127,16 @@ test('shouldSeed overwrites when the route is missing or does not match the seed
   assert.equal(shouldSeed({ 'kimi-coding-plan': {} }), true)
   // 与种子深度一致（无论来自哪个层）才跳过
   assert.equal(shouldSeed({ openrouter: seedProfile() }), false)
-  // 存在但不匹配：空对象 / 多余模型（目录全量）/ 滞后快照（仅旧单模型种子）/ 用户编辑 → 覆写为种子
+  // 存在但不匹配：空对象 / 多余模型（目录全量）/ 滞后快照（仅旧单模型种子）/
+  // 仅顺序不同 / 用户编辑 → 覆写为种子
   assert.equal(shouldSeed({ openrouter: {} }), true)
   const extra = seedProfile()
   extra.models.push({ ...extra.models[0], id: 'deepseek/another-model' })
   assert.equal(shouldSeed({ openrouter: extra }), true)
-  const stale = seedProfile()
-  stale.models = stale.models.slice(0, 1)
-  assert.equal(shouldSeed({ openrouter: stale }), true)
+  assert.equal(shouldSeed({ openrouter: legacySingleModelSeed() }), true)
+  const reordered = seedProfile()
+  reordered.models.reverse()
+  assert.equal(shouldSeed({ openrouter: reordered }), true)
   const edited = seedProfile()
   edited.displayName = 'My OpenRouter'
   assert.equal(shouldSeed({ openrouter: edited }), true)
@@ -139,8 +146,7 @@ test('seed overwrites a mismatched route through the settings service', async ()
   // apply 级守卫：生效路由与种子不一致（如用户层仍是旧版单模型快照）时经
   // settings.update 按 provider 键覆写为种子；一致时不产生写入。
   const updates: Array<[string, unknown]> = []
-  const stale = seedProfile()
-  stale.models = stale.models.slice(0, 1)
+  const stale = legacySingleModelSeed()
   const makeSettings = (mismatch: boolean) => ({
     describe: () => [
       { ns: 'llm-pi-ai', value: { providers: { openrouter: mismatch ? stale : seedProfile() } } },
@@ -190,3 +196,13 @@ test('seed skips quietly when settings or the pi-ai row is absent', async () => 
   assert.equal(warnings.length, 2)
   assert.equal(updates.length, 0)
 })
+
+/**
+ * 初版（2026-11-14）单模型种子：仅 DeepSeek-V4.1-Flash-1017，模拟已播种到
+ * 用户层的滞后快照（重启后应被当前种子覆写）。
+ */
+function legacySingleModelSeed() {
+  const legacy = seedProfile()
+  legacy.models = legacy.models.filter((m) => m.id === 'deepseek/deepseek-v4.1-flash-1017')
+  return legacy
+}
